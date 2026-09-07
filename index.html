@@ -707,16 +707,32 @@
       display: flex;
       flex-direction: column;
     }
-    .photo-slot {
+    .carousel {
       position: relative;
-      aspect-ratio: 16 / 10;
+      aspect-ratio: 4 / 3;
       background:
         linear-gradient(145deg, rgba(0, 178, 227, 0.08), rgba(255, 199, 2, 0.05)),
-        rgba(10, 25, 47, 0.9);
-      border-bottom: 1px dashed rgba(0, 178, 227, 0.28);
+        rgba(10, 25, 47, 0.92);
+      border-bottom: 1px solid rgba(0, 178, 227, 0.18);
+      overflow: hidden;
+    }
+    .carousel-track { height: 100%; position: relative; }
+    .carousel-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
       display: grid;
       place-items: center;
-      overflow: hidden;
+      margin: 0;
+    }
+    .carousel-slide.is-active { opacity: 1; pointer-events: auto; z-index: 1; }
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #071525;
     }
     .photo-placeholder {
       display: flex;
@@ -728,17 +744,47 @@
       font-weight: 700;
       text-align: center;
       padding: 1rem;
-      z-index: 0;
     }
     .photo-placeholder i { font-size: 1.55rem; color: var(--cian); }
-    .photo-slot img {
+    .carousel-btn {
       position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: 1;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 3;
+      width: 2.05rem;
+      height: 2.05rem;
+      border: 0;
+      border-radius: 50%;
+      cursor: pointer;
+      color: #fff;
+      background: rgba(10, 25, 47, 0.78);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
     }
+    .carousel-btn:hover { background: var(--cian); color: #042033; }
+    .carousel-btn.prev { left: 0.45rem; }
+    .carousel-btn.next { right: 0.45rem; }
+    .carousel-dots {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0.5rem;
+      z-index: 3;
+      display: flex;
+      justify-content: center;
+      gap: 0.35rem;
+    }
+    .carousel-dots button {
+      width: 0.48rem;
+      height: 0.48rem;
+      border-radius: 999px;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.35);
+    }
+    .carousel-dots button.is-active { background: var(--amarillo); transform: scale(1.25); }
+    .carousel.is-single .carousel-btn,
+    .carousel.is-single .carousel-dots { opacity: 0.55; }
     .success-body { padding: 0.95rem 1.05rem 1.1rem; }
     .success-tag {
       font-size: 0.78rem;
@@ -1177,9 +1223,15 @@
         </header>
         <div class="success-grid">
           <article class="success-card">
-            <div class="photo-slot">
-              <span class="photo-placeholder"><i class="fa-solid fa-camera"></i>Foto Olimpiadas · más de 50 colegios</span>
-              <img src="assets/casos/olimpiadas.jpg" alt="EduKids en las Olimpiadas junto a más de 50 colegios" onerror="this.remove()">
+            <div class="carousel" data-carousel aria-label="Fotos Olimpiadas">
+              <div class="carousel-track">
+                <figure class="carousel-slide is-active is-placeholder">
+                  <span class="photo-placeholder"><i class="fa-solid fa-camera"></i>Foto Olimpiadas · más de 50 colegios</span>
+                </figure>
+              </div>
+              <button type="button" class="carousel-btn prev" aria-label="Foto anterior"><i class="fa-solid fa-chevron-left"></i></button>
+              <button type="button" class="carousel-btn next" aria-label="Foto siguiente"><i class="fa-solid fa-chevron-right"></i></button>
+              <div class="carousel-dots"></div>
             </div>
             <div class="success-body">
               <p class="success-tag">Olimpiadas escolares</p>
@@ -1188,9 +1240,15 @@
             </div>
           </article>
           <article class="success-card">
-            <div class="photo-slot">
-              <span class="photo-placeholder"><i class="fa-solid fa-camera"></i>Foto Arduino Day · Totonicapán</span>
-              <img src="assets/casos/arduino-day.jpg" alt="Alumnos EduKids en el Arduino Day de Totonicapán" onerror="this.remove()">
+            <div class="carousel" data-carousel aria-label="Fotos Arduino Day Totonicapán">
+              <div class="carousel-track">
+                <figure class="carousel-slide is-active">
+                  <img src="assets/casos/arduino-day-1.png" alt="Estudiante EduKids armando un Sumo Bot en el Arduino Day de Totonicapán">
+                </figure>
+              </div>
+              <button type="button" class="carousel-btn prev" aria-label="Foto anterior"><i class="fa-solid fa-chevron-left"></i></button>
+              <button type="button" class="carousel-btn next" aria-label="Foto siguiente"><i class="fa-solid fa-chevron-right"></i></button>
+              <div class="carousel-dots"></div>
             </div>
             <div class="success-body">
               <p class="success-tag">Arduino Day · Totonicapán</p>
@@ -1199,9 +1257,15 @@
             </div>
           </article>
           <article class="success-card">
-            <div class="photo-slot">
-              <span class="photo-placeholder"><i class="fa-solid fa-camera"></i>Foto Soy Inventor GT</span>
-              <img src="assets/casos/soy-inventor.jpg" alt="Premiación de Soy Inventor GT en primaria y diversificado" onerror="this.remove()">
+            <div class="carousel" data-carousel aria-label="Fotos Soy Inventor GT">
+              <div class="carousel-track">
+                <figure class="carousel-slide is-active is-placeholder">
+                  <span class="photo-placeholder"><i class="fa-solid fa-camera"></i>Foto Soy Inventor GT</span>
+                </figure>
+              </div>
+              <button type="button" class="carousel-btn prev" aria-label="Foto anterior"><i class="fa-solid fa-chevron-left"></i></button>
+              <button type="button" class="carousel-btn next" aria-label="Foto siguiente"><i class="fa-solid fa-chevron-right"></i></button>
+              <div class="carousel-dots"></div>
             </div>
             <div class="success-body">
               <p class="success-tag">Soy Inventor GT</p>
@@ -1210,9 +1274,15 @@
             </div>
           </article>
           <article class="success-card">
-            <div class="photo-slot">
-              <span class="photo-placeholder"><i class="fa-solid fa-camera"></i>Foto NASA Space Apps</span>
-              <img src="assets/casos/space-apps.jpg" alt="Participación de EduKids en NASA Space Apps Challenge" onerror="this.remove()">
+            <div class="carousel" data-carousel aria-label="Fotos NASA Space Apps">
+              <div class="carousel-track">
+                <figure class="carousel-slide is-active is-placeholder">
+                  <span class="photo-placeholder"><i class="fa-solid fa-camera"></i>Foto NASA Space Apps</span>
+                </figure>
+              </div>
+              <button type="button" class="carousel-btn prev" aria-label="Foto anterior"><i class="fa-solid fa-chevron-left"></i></button>
+              <button type="button" class="carousel-btn next" aria-label="Foto siguiente"><i class="fa-solid fa-chevron-right"></i></button>
+              <div class="carousel-dots"></div>
             </div>
             <div class="success-body">
               <p class="success-tag">NASA Space Apps Challenge</p>
@@ -1453,6 +1523,45 @@
         { threshold: 0.45 }
       );
       sections.forEach((section) => observer.observe(section));
+
+      document.querySelectorAll("[data-carousel]").forEach((carousel) => {
+        const slides = Array.from(carousel.querySelectorAll(".carousel-slide"));
+        const dotsWrap = carousel.querySelector(".carousel-dots");
+        const prev = carousel.querySelector(".carousel-btn.prev");
+        const next = carousel.querySelector(".carousel-btn.next");
+        let index = Math.max(0, slides.findIndex((slide) => slide.classList.contains("is-active")));
+        carousel.classList.toggle("is-single", slides.length < 2);
+
+        slides.forEach((_, i) => {
+          const dot = document.createElement("button");
+          dot.type = "button";
+          dot.setAttribute("aria-label", "Ir a foto " + (i + 1));
+          dotsWrap.appendChild(dot);
+        });
+        const dots = Array.from(dotsWrap.children);
+
+        function goTo(nextIndex) {
+          index = (nextIndex + slides.length) % slides.length;
+          slides.forEach((slide, i) => slide.classList.toggle("is-active", i === index));
+          dots.forEach((dot, i) => dot.classList.toggle("is-active", i === index));
+        }
+
+        prev.addEventListener("click", () => goTo(index - 1));
+        next.addEventListener("click", () => goTo(index + 1));
+        dots.forEach((dot, i) => dot.addEventListener("click", () => goTo(i)));
+
+        let startX = 0;
+        carousel.addEventListener("touchstart", (event) => {
+          startX = event.changedTouches[0].clientX;
+        }, { passive: true });
+        carousel.addEventListener("touchend", (event) => {
+          const delta = event.changedTouches[0].clientX - startX;
+          if (Math.abs(delta) < 40) return;
+          goTo(index + (delta < 0 ? 1 : -1));
+        }, { passive: true });
+
+        goTo(index);
+      });
     })();
   </script>
 </body>
