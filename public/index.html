@@ -709,10 +709,8 @@
     }
     .carousel {
       position: relative;
-      aspect-ratio: 4 / 3;
-      background:
-        linear-gradient(145deg, rgba(0, 178, 227, 0.08), rgba(255, 199, 2, 0.05)),
-        rgba(10, 25, 47, 0.92);
+      aspect-ratio: 4 / 5;
+      background: #071525;
       border-bottom: 1px solid rgba(0, 178, 227, 0.18);
       overflow: hidden;
     }
@@ -722,17 +720,21 @@
       inset: 0;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.35s ease;
+      transition: opacity 0.45s ease;
       display: grid;
       place-items: center;
       margin: 0;
+      padding: 0.65rem 0.65rem 1.4rem;
     }
     .carousel-slide.is-active { opacity: 1; pointer-events: auto; z-index: 1; }
     .carousel-slide img {
-      width: 100%;
-      height: 100%;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 100%;
       object-fit: contain;
-      background: #071525;
+      object-position: center;
+      border-radius: 0.45rem;
     }
     .photo-placeholder {
       display: flex;
@@ -1223,10 +1225,16 @@
         </header>
         <div class="success-grid">
           <article class="success-card">
-            <div class="carousel" data-carousel aria-label="Fotos Olimpiadas">
+            <div class="carousel" data-carousel aria-label="Fotos Olimpiadas de la Ciudad">
               <div class="carousel-track">
-                <figure class="carousel-slide is-active is-placeholder">
-                  <span class="photo-placeholder"><i class="fa-solid fa-camera"></i>Foto Olimpiadas · más de 50 colegios</span>
+                <figure class="carousel-slide is-active">
+                  <img src="assets/casos/olimpiadas-1.jpg" alt="Robot EduKids en las Olimpiadas de la Ciudad de Guatemala">
+                </figure>
+                <figure class="carousel-slide">
+                  <img src="assets/casos/olimpiadas-2.jpg" alt="Robots en la pista de las Olimpiadas Robóticas">
+                </figure>
+                <figure class="carousel-slide">
+                  <img src="assets/casos/olimpiadas-3.jpg" alt="Identificación EduKids Edu Sumo en las Olimpiadas Robóticas">
                 </figure>
               </div>
               <button type="button" class="carousel-btn prev" aria-label="Foto anterior"><i class="fa-solid fa-chevron-left"></i></button>
@@ -1234,9 +1242,9 @@
               <div class="carousel-dots"></div>
             </div>
             <div class="success-body">
-              <p class="success-tag">Olimpiadas escolares</p>
+              <p class="success-tag">Olimpiadas de la Ciudad</p>
               <h3>Aceptados entre más de 50 colegios</h3>
-              <p>Se participó entre más de 50 colegios y aceptaron a EduKids como parte de las Olimpiadas: una vitrina institucional, no un taller aislado.</p>
+              <p>Se participó entre más de 50 colegios y aceptaron a EduKids como parte de las Olimpiadas Robóticas de la Ciudad: una vitrina institucional, no un taller aislado.</p>
             </div>
           </article>
           <article class="success-card">
@@ -1533,12 +1541,13 @@
       );
       sections.forEach((section) => observer.observe(section));
 
-      document.querySelectorAll("[data-carousel]").forEach((carousel) => {
+      document.querySelectorAll("[data-carousel]").forEach((carousel, carouselIndex) => {
         const slides = Array.from(carousel.querySelectorAll(".carousel-slide"));
         const dotsWrap = carousel.querySelector(".carousel-dots");
         const prev = carousel.querySelector(".carousel-btn.prev");
         const next = carousel.querySelector(".carousel-btn.next");
         let index = Math.max(0, slides.findIndex((slide) => slide.classList.contains("is-active")));
+        let timer = null;
         carousel.classList.toggle("is-single", slides.length < 2);
 
         slides.forEach((_, i) => {
@@ -1555,21 +1564,41 @@
           dots.forEach((dot, i) => dot.classList.toggle("is-active", i === index));
         }
 
-        prev.addEventListener("click", () => goTo(index - 1));
-        next.addEventListener("click", () => goTo(index + 1));
-        dots.forEach((dot, i) => dot.addEventListener("click", () => goTo(i)));
+        function stop() {
+          if (timer) {
+            window.clearInterval(timer);
+            timer = null;
+          }
+        }
+
+        function play() {
+          stop();
+          if (reduceMotion || slides.length < 2) return;
+          timer = window.setInterval(() => goTo(index + 1), 4200);
+        }
+
+        prev.addEventListener("click", () => { goTo(index - 1); play(); });
+        next.addEventListener("click", () => { goTo(index + 1); play(); });
+        dots.forEach((dot, i) => dot.addEventListener("click", () => { goTo(i); play(); }));
 
         let startX = 0;
         carousel.addEventListener("touchstart", (event) => {
           startX = event.changedTouches[0].clientX;
+          stop();
         }, { passive: true });
         carousel.addEventListener("touchend", (event) => {
           const delta = event.changedTouches[0].clientX - startX;
-          if (Math.abs(delta) < 40) return;
-          goTo(index + (delta < 0 ? 1 : -1));
+          if (Math.abs(delta) >= 40) goTo(index + (delta < 0 ? 1 : -1));
+          play();
         }, { passive: true });
 
+        carousel.addEventListener("mouseenter", stop);
+        carousel.addEventListener("mouseleave", play);
+        carousel.addEventListener("focusin", stop);
+        carousel.addEventListener("focusout", play);
+
         goTo(index);
+        window.setTimeout(play, carouselIndex * 700);
       });
     })();
   </script>
